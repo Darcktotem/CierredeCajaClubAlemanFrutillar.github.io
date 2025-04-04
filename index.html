@@ -427,48 +427,52 @@ function actualizarCaja() {
 
 
     function exportarPDF() {
-        let responsable = document.getElementById("responsable").value.trim();
-        let fechaVal = document.getElementById("fecha").value;
-        if (!responsable || !fechaVal) {
-            alert("Por favor, ingresa el Responsable y la Fecha antes de exportar.");
-            return;
+    let responsable = document.getElementById("responsable").value.trim();
+    let fechaVal = document.getElementById("fecha").value;
+    if (!responsable || !fechaVal) {
+        alert("Por favor, ingresa el Responsable y la Fecha antes de exportar.");
+        return;
+    }
+
+    // Capturar desde el header principal
+    const element = document.querySelector("body");
+    
+    html2canvas(element, {
+        scale: 1,
+        logging: false,
+        useCORS: true,
+        scrollY: 0, // Forzar inicio en top:0
+        windowHeight: document.documentElement.scrollHeight,
+        ignoreElements: (element) => element.classList.contains("btn-export")
+    }).then(canvas => {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        // Ajustar relación de aspecto
+        const imgWidth = 210; // Ancho A4
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        // Calcular posición vertical
+        const pageHeight = 297; // Alto A4
+        const verticalPosition = 10; // Margen superior
+
+        // Agregar imagen centrada
+        if (imgHeight < pageHeight) {
+            pdf.addImage(canvas, "JPEG", 0, verticalPosition, imgWidth, imgHeight);
+        } else {
+            let heightLeft = imgHeight + verticalPosition;
+            let position = verticalPosition;
+            
+            while (heightLeft > 0) {
+                pdf.addImage(canvas, "JPEG", 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                position -= pageHeight;
+                if (heightLeft > 0) pdf.addPage();
+            }
         }
 
-        window.scrollTo(0, 0);
-        html2canvas(document.documentElement, {
-            scale: 2,
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: document.documentElement.scrollWidth,
-            windowHeight: document.documentElement.scrollHeight
-        }).then(canvas => {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF("p", "pt", "a4");
-
-            const fechaValue = document.getElementById("fecha").value || "SinFecha";
-
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-            const imgData = canvas.toDataURL("image/png");
-
-            const imgWidth = pdfWidth;
-            const imgHeight = canvas.height * pdfWidth / canvas.width;
-
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-            heightLeft -= pdfHeight;
-
-            while (heightLeft > 0) {
-                position = -imgHeight + heightLeft;
-                pdf.addPage();
-                pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-                heightLeft -= pdfHeight;
-            }
-
-            pdf.save(`Reporte_${fechaValue}.pdf`);
-        });
-    }
+        pdf.save(`Reporte_${fechaVal}.pdf`);
+    });
+}
 </script>
 
