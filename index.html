@@ -3,44 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cierre de Caja Club Aleman</title>
+    <title>Reporte Diario - Club Aleman Frutillar</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <!-- Librerías para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <style>
+        :root {
+            --primary-color: #2A4D6D;
+            --secondary-color: #5B7B9D;
+            --accent-color: #FF6B6B;
+            --success-color: #4CAF50;
+            --info-color: #2196F3;
+            --warning-color: #FFC107;
+        }
+    
         body {
-            background-color: #f8f9fa;
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
         }
+    
         .container {
-            max-width: 1200px; /* Aumentamos para mejor vista en 1920x1080 */
-            margin-top: 20px;
+            max-width: 1400px;
+            margin-top: 2rem;
+            padding-bottom: 4rem;
         }
+    
+        h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 2rem 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+    
         .card {
-            margin-bottom: 20px;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: white;
         }
-        .transbank-box {
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
+    
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
         }
-        /* Resaltar elementos importantes */
-        .resaltado {
+    
+        .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
             font-size: 1.25rem;
-            font-weight: bold;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
         }
-        .resaltado-total {
-            color: #0d6efd; /* azul bootstrap */
+    
+        .form-label {
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
         }
-        .resaltado-saldo {
-            color: #dc3545; /* rojo bootstrap */
+    
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s;
         }
+    
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(42,77,109,0.1);
+        }
+    
+        .transbank-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+    
+        .transbank-box h6 {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+    
+        .resaltado {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+    
+        .resaltado-total { color: var(--primary-color); }
+        .resaltado-saldo { color: var(--accent-color); }
+    
+        .sticky-summary {
+    position: sticky;
+    top: -1px;
+    z-index: 500;
+    background: white;
+    padding: 1rem 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin: 0 -15px;
+    padding: 15px;
+    border-radius: 0 0 12px 12px;
+}
+    
+        .sticky-summary .card {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+    
+        textarea {
+            min-height: 300px;
+            resize: vertical;
+        }
+    
+        /* Botón PDF mejorado */
+        .btn-export {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+    margin-top: 16px; /* Espacio para el resumen sticky */
+    padding-bottom: 100px; /* Espacio para el botón flotante */
+}
+    
+        .btn-export:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+    
+        /* Mejoras para grupos de inputs */
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+    
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+    
+        /* Estilos para impresión */
+        @media print {
+    .sticky-summary, .btn-export {
+        display: none !important;
+    }
+    .container {
+        margin-top: 0;
+        padding-bottom: 0;
+    }
+}
     </style>
 </head>
 <body>
+    <h2 class="text-center">Reporte Club Aleman Frutillar</h2>
+    <div>
+    <div class="row sticky-summary text-center">
+        <div class="col-md-4">
+          <div class="card shadow-sm border-primary">
+            <div class="card-body">
+              <h6 class="text-primary">💵 Venta Total</h6>
+              <p class="resaltado resaltado-total mb-0" id="venta_total">$0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm border-success">
+            <div class="card-body">
+              <h6 class="text-success">💳 Propinas Transbank</h6>
+              <p class="resaltado text-success mb-0" id="total_propinas">$0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm border-danger">
+            <div class="card-body">
+              <h6 class="text-danger">🧾 Saldo Final en Caja</h6>
+              <p class="resaltado resaltado-saldo mb-0" id="saldo_caja">$0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="container">
-        <h2 class="text-center">Reporte Club Aleman Frutillar</h2>
+
 
         <!-- Fila principal: Col 1 (TOTAlES) + Col 2 (Comentarios) -->
         <div class="row">
@@ -69,22 +234,11 @@
                             <!-- Fondo de Caja -->
                             <div class="me-3 mb-2">
                                 <label for="fondo_caja_input" class="form-label"><strong>Fondo de Caja ($):</strong></label>
-                                <input type="text" id="fondo_caja_input" class="form-control" value="250000" oninput="formatNumberInput(this); actualizarCaja()">
+                                <input type="text" id="fondo_caja_input" class="form-control" value="0" oninput="formatNumberInput(this); actualizarCaja()">
                             </div>
                         </div>
 
-                        <!-- Resaltamos Venta Total y Saldo Final -->
-                        <p class="mt-2 resaltado resaltado-total">
-                            <span>Venta Total: </span>
-                            <span id="venta_total">$0</span>
-                        </p>
-
-                        <p><strong>Total Propinas Transbank:</strong> <span id="total_propinas">$0</span></p>
-
-                        <p class="resaltado resaltado-saldo">
-                            <span>Saldo Final en Caja: </span>
-                            <span id="saldo_caja">$250,000</span>
-                        </p>
+                        
                     </div>
                 </div>
 
@@ -107,8 +261,8 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Efectivo y Otros</h5>
-                                <label for="efectivo">Efectivo ($):</label>
+                                <h5 class="card-title">Gifcard y Otros</h5>
+                                <label for="efectivo">Giftcard:</label>
                                 <input type="text" id="efectivo" class="form-control" oninput="formatNumberInput(this); actualizarCaja()">
                                 <label for="dolares" class="mt-2">Dólares ($):</label>
                                 <input type="text" id="dolares" class="form-control" oninput="formatNumberInput(this); actualizarCaja()">
@@ -116,6 +270,7 @@
                                 <input type="text" id="consumo_interno" class="form-control" oninput="formatNumberInput(this); actualizarCaja()">
                                 <label for="retiros" class="mt-2">Retiros/Egresos ($):</label>
                                 <input type="text" id="retiros" class="form-control" oninput="formatNumberInput(this); actualizarCaja()">
+                                <label for="transferencias" class="mt-2">Transferencias ($):</label><input type="text" id="transferencias" class="form-control" oninput="formatNumberInput(this); actualizarCaja()">
                             </div>
                         </div>
                     </div>
@@ -205,131 +360,115 @@
         </div>
 
         <!-- Botón para Exportar a PDF -->
-        <button class="btn btn-danger w-100 mt-3" onclick="exportarPDF()">Exportar a PDF</button>
+        <button class="btn-export" onclick="exportarPDF()">Exportar a PDF</button>
 
-        <script>
-            // Formatear input para miles con . y remover caracteres que no sean dígitos
-            function formatNumberInput(el) {
-                // Eliminamos todo lo que no sea dígito
-                let val = el.value.replace(/\D/g, "");
-                let num = parseInt(val) || 0;
+        <!-- Todo el HTML es igual al que enviaste arriba, solo cambia el script final. Reemplaza el <script> final por este: -->
 
-                if (num === 0) {
-                    // Si es 0, dejamos el input vacío
-                    el.value = "";
-                } else {
-                    // Convertir a locale string con separador de miles
-                    el.value = num.toLocaleString("es-ES");
-                }
+<script>
+    function formatNumberInput(el) {
+        let val = el.value.replace(/\D/g, "");
+        let num = parseInt(val) || 0;
+        el.value = num === 0 ? "" : num.toLocaleString("es-ES");
+    }
+
+    function parseNumber(str) {
+        return parseInt(str.replace(/\D/g, "")) || 0;
+    }
+
+    function actualizarTotales() {
+    let club = parseNumber(document.getElementById("venta_club").value);
+    let boliche = parseNumber(document.getElementById("venta_boliche").value);
+
+    // Venta total sin propinas
+    let total = club + boliche;
+
+    document.getElementById("venta_total").innerText = `$${total.toLocaleString("es-ES")}`;
+    actualizarCaja(); // Actualizar saldo automáticamente
+}
+
+function actualizarCaja() {
+    let ventaClub = parseNumber(document.getElementById("venta_club").value);
+    let ventaBoliche = parseNumber(document.getElementById("venta_boliche").value);
+
+    // Propinas
+    let propinasIds = ["transbank1_propina", "transbank2_propina", "transbank3_propina", "transbank4_propina"];
+    let propinas = propinasIds.reduce((acc, id) => acc + parseNumber(document.getElementById(id).value), 0);
+    document.getElementById("total_propinas").innerText = `$${propinas.toLocaleString("es-ES")}`;
+
+    let totalIngresos = ventaClub + ventaBoliche + propinas;
+
+    // Pagos Transbank
+    let transbankIds = ["transbank1_credito", "transbank1_debito", "transbank1_prepago",
+                        "transbank2_credito", "transbank2_debito", "transbank2_prepago",
+                        "transbank3_credito", "transbank3_debito", "transbank3_prepago",
+                        "transbank4_credito", "transbank4_debito", "transbank4_prepago"];
+    let pagosTransbank = transbankIds.reduce((acc, id) => acc + parseNumber(document.getElementById(id).value), 0);
+
+    // Otros egresos
+    let pedidosYa = parseNumber(document.getElementById("efectivo").value); // antes era efectivo
+    let dolares = parseNumber(document.getElementById("dolares").value);
+    let consumo = parseNumber(document.getElementById("consumo_interno").value);
+    let egresos = parseNumber(document.getElementById("retiros").value);
+    let transferencias = parseNumber(document.getElementById("transferencias").value);
+
+
+    let totalEgresos = pagosTransbank + pedidosYa + dolares + consumo + egresos + transferencias;
+    let saldoFinal = totalIngresos - totalEgresos;
+
+    document.getElementById("saldo_caja").innerText = `$${saldoFinal.toLocaleString("es-ES")}`;
+
+    // Proporción promoción
+    let ventaTotal = ventaClub + ventaBoliche;
+    let descuentoPromo = parseNumber(document.getElementById("descuento_promo").value);
+    let proporcionPromo = ventaTotal > 0 ? ((descuentoPromo / ventaTotal) * 100).toFixed(2) : 0;
+    document.getElementById("proporcion_promo").innerText = `${proporcionPromo}%`;
+}
+
+
+
+    function exportarPDF() {
+        let responsable = document.getElementById("responsable").value.trim();
+        let fechaVal = document.getElementById("fecha").value;
+        if (!responsable || !fechaVal) {
+            alert("Por favor, ingresa el Responsable y la Fecha antes de exportar.");
+            return;
+        }
+
+        window.scrollTo(0, 0);
+        html2canvas(document.documentElement, {
+            scale: 2,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: document.documentElement.scrollWidth,
+            windowHeight: document.documentElement.scrollHeight
+        }).then(canvas => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("p", "pt", "a4");
+
+            const fechaValue = document.getElementById("fecha").value || "SinFecha";
+
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const imgData = canvas.toDataURL("image/png");
+
+            const imgWidth = pdfWidth;
+            const imgHeight = canvas.height * pdfWidth / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+            heightLeft -= pdfHeight;
+
+            while (heightLeft > 0) {
+                position = -imgHeight + heightLeft;
+                pdf.addPage();
+                pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+                heightLeft -= pdfHeight;
             }
 
-            // Función para parsear texto con puntos a número entero
-            function parseNumber(str) {
-                // Removemos todo lo que no sea dígito
-                return parseInt(str.replace(/\D/g, "")) || 0;
-            }
+            pdf.save(`Reporte_${fechaValue}.pdf`);
+        });
+    }
+</script>
 
-            // Actualiza la venta total al ingresar ventas Club y Boliche
-            function actualizarTotales() {
-                let club = parseNumber(document.getElementById("venta_club").value);
-                let boliche = parseNumber(document.getElementById("venta_boliche").value);
-                let total = club + boliche;
-                document.getElementById("venta_total").innerText = `$${total.toLocaleString("es-ES")}`;
-                actualizarCaja();
-            }
-
-            // Actualiza el saldo final en caja, total de propinas y proporcion de promo
-            function actualizarCaja() {
-                // Obtener la venta total como número
-                let ventaTotal = parseNumber(document.getElementById("venta_total").innerText);
-
-                // Sumar todas las propinas
-                let propinasIds = ["transbank1_propina", "transbank2_propina", "transbank3_propina", "transbank4_propina"];
-                let propinas = propinasIds.reduce((acc, id) => acc + parseNumber(document.getElementById(id).value), 0);
-                document.getElementById("total_propinas").innerText = `$${propinas.toLocaleString("es-ES")}`;
-
-                // Sumar todos los pagos NO incluyendo propinas
-                let transbankIds = ["transbank1_credito", "transbank1_debito", "transbank1_prepago",
-                                    "transbank2_credito", "transbank2_debito", "transbank2_prepago",
-                                    "transbank3_credito", "transbank3_debito", "transbank3_prepago",
-                                    "transbank4_credito", "transbank4_debito", "transbank4_prepago"];
-                let transbankSinPropinas = transbankIds.reduce((acc, id) => acc + parseNumber(document.getElementById(id).value), 0);
-
-                let efectivo = parseNumber(document.getElementById("efectivo").value);
-                let dolares = parseNumber(document.getElementById("dolares").value);
-                let consumo = parseNumber(document.getElementById("consumo_interno").value);
-                let egresos = parseNumber(document.getElementById("retiros").value);
-
-                // Leer Fondo de Caja ingresado manualmente
-                let fondoCaja = parseNumber(document.getElementById("fondo_caja_input").value);
-
-                // Calculo: saldoFinal = ventaTotal - (transbankSinPropinas + efectivo + dolares + consumo + egresos + fondoCaja)
-                let saldoFinal = ventaTotal - (transbankSinPropinas + efectivo + dolares + consumo + egresos + fondoCaja);
-                document.getElementById("saldo_caja").innerText = `$${saldoFinal.toLocaleString("es-ES")}`;
-
-                // Calcular la proporcion de descuento de Promocion/Campaña
-                let descuentoPromo = parseNumber(document.getElementById("descuento_promo").value);
-                let proporcionPromo = 0;
-                if (ventaTotal > 0) {
-                    proporcionPromo = ((descuentoPromo / ventaTotal) * 100).toFixed(2);
-                }
-                document.getElementById("proporcion_promo").innerText = `${proporcionPromo}%`;
-            }
-
-            // Exportar a PDF en multiples paginas para que no se vea pequeño
-            function exportarPDF() {
-                // Validar si el responsable y fecha fueron ingresados
-                let responsable = document.getElementById("responsable").value.trim();
-                let fechaVal = document.getElementById("fecha").value;
-                if (!responsable || !fechaVal) {
-                    alert("Por favor, ingresa el Responsable y la Fecha antes de exportar.");
-                    return;
-                }
-
-                window.scrollTo(0, 0);
-                html2canvas(document.documentElement, {
-                    scale: 2, // aumenta la resolución
-                    scrollX: 0,
-                    scrollY: 0,
-                    windowWidth: document.documentElement.scrollWidth,
-                    windowHeight: document.documentElement.scrollHeight
-                }).then(canvas => {
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF("p", "pt", "a4");
-
-                    // Obtenemos la fecha para el nombre del archivo
-                    const fechaValue = document.getElementById("fecha").value;
-                    const fechaReporte = fechaValue ? fechaValue : "SinFecha";
-
-                    const pdfWidth = pdf.internal.pageSize.getWidth();  // Ancho de página PDF
-                    const pdfHeight = pdf.internal.pageSize.getHeight(); // Alto de página PDF
-
-                    // Convertimos todo el documento a dataURL de imagen
-                    const imgData = canvas.toDataURL("image/png");
-
-                    // Calculamos alto de la imagen si ajustamos al ancho de PDF
-                    const imgWidth = pdfWidth;
-                    const imgHeight = canvas.height * pdfWidth / canvas.width;
-
-                    let heightLeft = imgHeight;
-                    let position = 0;
-
-                    // Agregamos la primera página
-                    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-                    heightLeft -= pdfHeight;
-
-                    // Si queda contenido, agregamos mas páginas
-                    while (heightLeft > 0) {
-                        position = -imgHeight + heightLeft;
-                        pdf.addPage();
-                        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-                        heightLeft -= pdfHeight;
-                    }
-
-                    pdf.save(`Reporte_${fechaReporte}.pdf`);
-                });
-            }
-        </script>
-    </div>
-</body>
-</html>
