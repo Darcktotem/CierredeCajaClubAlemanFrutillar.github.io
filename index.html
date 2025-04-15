@@ -426,13 +426,77 @@ function actualizarCaja() {
 
 
 
-    function exportarPDF() {
+function exportarPDF() {
     let responsable = document.getElementById("responsable").value.trim();
     let fechaVal = document.getElementById("fecha").value;
     if (!responsable || !fechaVal) {
         alert("Por favor, ingresa el Responsable y la Fecha antes de exportar.");
         return;
     }
+
+    // Guardar referencia al textarea original
+    const textarea = document.getElementById("comentarios");
+    const originalTextarea = textarea.cloneNode(true);
+    
+    // Crear un div de reemplazo
+    const replacementDiv = document.createElement('div');
+    replacementDiv.style.whiteSpace = 'pre-wrap';
+    replacementDiv.style.width = textarea.offsetWidth + 'px';
+    replacementDiv.style.minHeight = textarea.offsetHeight + 'px';
+    replacementDiv.style.padding = '0.375rem 0.75rem';
+    replacementDiv.style.border = '1px solid #ced4da';
+    replacementDiv.style.borderRadius = '0.25rem';
+    replacementDiv.style.fontFamily = 'inherit';
+    replacementDiv.style.fontSize = 'inherit';
+    replacementDiv.style.lineHeight = 'inherit';
+    replacementDiv.textContent = textarea.value;
+    
+    // Reemplazar el textarea con el div
+    textarea.parentNode.replaceChild(replacementDiv, textarea);
+
+    // Capturar desde el header principal
+    const element = document.querySelector("body");
+    
+    html2canvas(element, {
+        scale: 1,
+        logging: false,
+        useCORS: true,
+        scrollY: 0,
+        windowHeight: document.documentElement.scrollHeight,
+        ignoreElements: (element) => element.classList.contains("btn-export")
+    }).then(canvas => {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        // Ajustar relación de aspecto
+        const imgWidth = 210; // Ancho A4
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        // Calcular posición vertical
+        const pageHeight = 297; // Alto A4
+        const verticalPosition = 10; // Margen superior
+
+        // Agregar imagen centrada
+        if (imgHeight < pageHeight) {
+            pdf.addImage(canvas, "JPEG", 0, verticalPosition, imgWidth, imgHeight);
+        } else {
+            let heightLeft = imgHeight + verticalPosition;
+            let position = verticalPosition;
+            
+            while (heightLeft > 0) {
+                pdf.addImage(canvas, "JPEG", 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                position -= pageHeight;
+                if (heightLeft > 0) pdf.addPage();
+            }
+        }
+
+        // Restaurar el textarea original
+        replacementDiv.parentNode.replaceChild(originalTextarea, replacementDiv);
+
+        pdf.save(`Reporte_${fechaVal}.pdf`);
+    });
+}
 
     // Capturar desde el header principal
     const element = document.querySelector("body");
@@ -473,6 +537,6 @@ function actualizarCaja() {
 
         pdf.save(`Reporte_${fechaVal}.pdf`);
     });
-}
+
 </script>
 
